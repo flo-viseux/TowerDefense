@@ -16,18 +16,6 @@ class TOWERDEFENSE_API ATDGrid : public AActor
 public:	
 	ATDGrid();
 
-	UPROPERTY(EditAnywhere, Category = "Grid")
-	int32 Width = 10;
-
-	UPROPERTY(EditAnywhere, Category = "Grid")
-	int32 Height = 10;
-
-	UPROPERTY(EditAnywhere, Category = "Grid")
-	float CellSize = 100.0f;
-    
-	UFUNCTION(CallInEditor, Category = "Grid")
-	void GenerateGrid();
-
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	FVector GetWorldPositionFromGridPosition(int32 X, int32 Y) const;
 
@@ -37,9 +25,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	bool IsValidGridPosition(int32 X, int32 Y) const;
 	
-	UPROPERTY(EditAnywhere, Category = "Grid")
-	UBlueprint* cellBP;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	TArray<ATDCell*> GridCells;
+	
+protected:
+	UFUNCTION(CallInEditor, Category = "Grid")
+	void GenerateGrid();
+	
+	UPROPERTY(EditAnywhere, Category = "Grid")
+	int32 Width = 10;
+
+	UPROPERTY(EditAnywhere, Category = "Grid")
+	int32 Height = 10;
+
+	UPROPERTY(EditAnywhere, Category = "Grid")
+	float CellSize = 100.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "Grid")
+	UBlueprint* CellBP;
 };

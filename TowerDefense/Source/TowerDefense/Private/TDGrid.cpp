@@ -8,8 +8,7 @@
 // Sets default values
 ATDGrid::ATDGrid()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
 
@@ -34,7 +33,7 @@ void ATDGrid::GenerateGrid()
             FVector SpawnLocation = GetWorldPositionFromGridPosition(X, Y);
             FActorSpawnParameters SpawnParams;
             FRotator SpawnRotation = FRotator(0, 0, 0);
-            ATDCell* newCell = GetWorld()->SpawnActor<ATDCell>(cellBP->GeneratedClass, SpawnLocation, SpawnRotation, SpawnParams);
+            ATDCell* newCell = GetWorld()->SpawnActor<ATDCell>(CellBP->GeneratedClass, SpawnLocation, SpawnRotation, SpawnParams);
             newCell->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
             newCell->SetActorLocation(SpawnLocation);
             newCell->X = X;

@@ -6,9 +6,13 @@
 // Sets default values
 ATDMonster::ATDMonster()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+    
+	UStaticMeshComponent* MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
+	RootComponent = MeshComponent;
+    
+	DistanceAlongSpline = 0.0f;
+	bReachedEnd = false;
 }
 
 void ATDMonster::ApplyEffect(UTDEffect* Effect)
@@ -33,17 +37,59 @@ void ATDMonster::BeginPlay()
 	SpeedAbility = UTDAbility::CreateAbility(ETDAbilityType::Speed, InitialSpeed);
 }
 
-// Called every frame
 void ATDMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!PathToFollow || bReachedEnd)
+		return;
+
+	// Move and rotate the monster along the spline
+	DistanceAlongSpline += SpeedAbility->GetCurrentValue() * DeltaTime;
+    
+	FVector NewLocation = PathToFollow->GetLocationAtDistanceAlongSpline(
+		DistanceAlongSpline, 
+		ESplineCoordinateSpace::World
+	);
+    
+	FRotator NewRotation = PathToFollow->GetRotationAtDistanceAlongSpline(
+		DistanceAlongSpline, 
+		ESplineCoordinateSpace::World
+	);
+
+	SetActorLocationAndRotation(NewLocation, NewRotation);
+
+	// Check if monster reached the end of the spline
+	if (DistanceAlongSpline >= PathToFollow->GetSplineLength())
+	{
+		bReachedEnd = true;
+		DealDamageAndDestroy();
+	}
 }
 
-// Called to bind functionality to input
-void ATDMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ATDMonster::SetSplinePath(USplineComponent* NewSpline)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	PathToFollow = NewSpline;
+    
+	// Place monster at the beginning of the spline
+	if (PathToFollow)
+	{
+		SetActorLocation(PathToFollow->GetLocationAtDistanceAlongSpline(
+			0.0f, 
+			ESplineCoordinateSpace::World
+		));
+	}
+}
 
+void ATDMonster::DealDamageAndDestroy()
+{
+	// TODO : apply damage to player core
+    
+	Destroy();
+}
+
+int ATDMonster::GetGold() const
+{
+	return Gold;
 }
 

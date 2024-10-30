@@ -6,6 +6,7 @@
 #include "TDAbility.h"
 #include "TDEffect.h"
 #include "GameFramework/Pawn.h"
+#include "Components/SplineComponent.h"
 #include "TDMonster.generated.h"
 
 UCLASS()
@@ -17,14 +18,17 @@ public:
 	// Sets default values for this pawn's properties
 	ATDMonster();
 	
-	UPROPERTY(EditAnywhere, Category = "Health")
-	int InitialHealth;
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere, Category = "Speed")
-	int InitialSpeed;
+	UFUNCTION(BlueprintCallable, Category="Gold")
+	int GetGold() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Effect")
-	void ApplyEffect(UTDEffect* Effect);
+	UFUNCTION(BlueprintCallable, Category="Path")
+	void SetSplinePath(USplineComponent* NewSpline);
+
+	UFUNCTION(BlueprintCallable, Category="Path")
+	void DealDamageAndDestroy();
 
 private:
 	UTDAbility* HealthAbility;
@@ -35,11 +39,22 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditAnywhere, Category = "Abilities")
+	float InitialHealth;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UPROPERTY(EditAnywhere, Category = "Abilities")
+	float InitialSpeed;
 
+	UPROPERTY(EditAnywhere, Category = "Gold")
+	int Gold;
+
+	UFUNCTION(BlueprintCallable, Category = "Effect")
+	void ApplyEffect(UTDEffect* Effect);
+
+	UPROPERTY()
+	USplineComponent* PathToFollow;
+
+	float DistanceAlongSpline;
+	
+	bool bReachedEnd;
 };

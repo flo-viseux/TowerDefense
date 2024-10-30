@@ -13,5 +13,20 @@ UCLASS()
 class TOWERDEFENSE_API ATDPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintCallable, Category="Gold")
+	int GetGold() const;
+
+	UFUNCTION(BlueprintCallable, Category="Gold")
+	void AddGold(int GoldToAdd);
+
+protected:
+	virtual void BeginPlay() override;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gold")
+	int InitialGold;
+	
+private:
+	int Gold;
 };
