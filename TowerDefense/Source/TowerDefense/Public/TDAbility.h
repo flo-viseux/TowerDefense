@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
 #include "TDAbility.generated.h"
 
 UENUM(BlueprintType)
@@ -16,25 +15,19 @@ enum class ETDAbilityType : uint8
 /**
  * 
  */
-UCLASS()
-class TOWERDEFENSE_API UTDAbility : public UObject
+USTRUCT(BlueprintType)
+struct TOWERDEFENSE_API FTDAbility
 {
 	GENERATED_BODY()
 
 public:
-	UTDAbility();
-	
-	UFUNCTION(BlueprintCallable, Category = "Ability")
-	static UTDAbility* CreateAbility(ETDAbilityType InAbilityType, float InAbilityInitialValue);
+	FTDAbility(): AbilityType(ETDAbilityType::Health), AbilityInitialValue(0), AbilityCurrentValue(0) {}
 
-	UFUNCTION(BlueprintCallable, Category="Ability")
-	void Init(ETDAbilityType InAbilityType, float InAbilityInitialValue);
+	FTDAbility(ETDAbilityType InAbilityType, float InAbilityInitialValue);
 	
-	UFUNCTION(BlueprintCallable, Category="Ability")
 	void ApplyEffect(float InEffectValue);
 
-	UFUNCTION(BlueprintCallable, Category="Ability")
-	int GetCurrentValue();
+	float GetCurrentValue() const;
 
 private:
 	ETDAbilityType AbilityType;

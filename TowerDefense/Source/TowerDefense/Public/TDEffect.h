@@ -16,25 +16,19 @@ enum class ETDEffectType : uint8
 /**
  * 
  */
-UCLASS()
-class TOWERDEFENSE_API UTDEffect : public UObject
+USTRUCT(BlueprintType)
+struct TOWERDEFENSE_API FTDEffect
 {
 	GENERATED_BODY()
 	
 public:
-	UTDEffect();
+	FTDEffect(): EffectType(ETDEffectType::Hit), EffectValue(0) {}
 	
-	UFUNCTION(BlueprintCallable, Category = "Effect")
-	static UTDEffect* CreateEffect(ETDEffectType InEffectType, float InEffectValue);
-	
-	UFUNCTION(BlueprintCallable, Category="Ability")
-	void Init(ETDEffectType InEffectType, float InEffectValue);
+	FTDEffect(ETDEffectType InEffectType, float InEffectValue);
 
-	UFUNCTION(BlueprintCallable, Category="Effect")
-	ETDEffectType GetType();
+	ETDEffectType GetType() const;
 
-	UFUNCTION(BlueprintCallable, Category="Effect")
-	float GetValue();
+	float GetValue() const;
 
 private:
 	ETDEffectType EffectType;

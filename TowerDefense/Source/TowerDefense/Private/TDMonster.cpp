@@ -3,6 +3,8 @@
 
 #include "TDMonster.h"
 
+#include "Components/TimelineComponent.h"
+
 // Sets default values
 ATDMonster::ATDMonster()
 {
@@ -11,30 +13,35 @@ ATDMonster::ATDMonster()
 	UStaticMeshComponent* MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
 	RootComponent = MeshComponent;
     
-	DistanceAlongSpline = 0.0f;
+	DistanceAlongPath = 0.0f;
 	bReachedEnd = false;
 }
 
-void ATDMonster::ApplyEffect(UTDEffect* Effect)
-{
-	switch (Effect->GetType())
-	{
-		case ETDEffectType::Hit:
-			HealthAbility->ApplyEffect(Effect->GetValue());
-			break;
-		case ETDEffectType::Slow:
-			SpeedAbility->ApplyEffect(Effect->GetValue());
-			break;
-	}
-}
-
-// Called when the game starts or when spawned
 void ATDMonster::BeginPlay()
 {
 	Super::BeginPlay();
 
-	HealthAbility = UTDAbility::CreateAbility(ETDAbilityType::Health, InitialHealth);
-	SpeedAbility = UTDAbility::CreateAbility(ETDAbilityType::Speed, InitialSpeed);
+	HealthAbility = FTDAbility(ETDAbilityType::Health, InitialHealth);
+	SpeedAbility = FTDAbility(ETDAbilityType::Speed, InitialSpeed);
+}
+
+void ATDMonster::ApplyEffect(FTDEffect Effect)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Effect Value : %f"), Effect.GetValue());
+	
+	switch (Effect.GetType())
+	{
+		case ETDEffectType::Hit:
+			HealthAbility.ApplyEffect(Effect.GetValue());
+		
+			if (HealthAbility.GetCurrentValue() <= 0)
+				this->Destroy();
+				
+			break;
+		case ETDEffectType::Slow:
+			SpeedAbility.ApplyEffect(Effect.GetValue());
+			break;
+	}
 }
 
 void ATDMonster::Tick(float DeltaTime)
@@ -45,22 +52,22 @@ void ATDMonster::Tick(float DeltaTime)
 		return;
 
 	// Move and rotate the monster along the spline
-	DistanceAlongSpline += SpeedAbility->GetCurrentValue() * DeltaTime;
+	DistanceAlongPath += SpeedAbility.GetCurrentValue() * DeltaTime;
     
 	FVector NewLocation = PathToFollow->GetLocationAtDistanceAlongSpline(
-		DistanceAlongSpline, 
+		DistanceAlongPath, 
 		ESplineCoordinateSpace::World
 	);
     
 	FRotator NewRotation = PathToFollow->GetRotationAtDistanceAlongSpline(
-		DistanceAlongSpline, 
+		DistanceAlongPath, 
 		ESplineCoordinateSpace::World
 	);
 
 	SetActorLocationAndRotation(NewLocation, NewRotation);
 
 	// Check if monster reached the end of the spline
-	if (DistanceAlongSpline >= PathToFollow->GetSplineLength())
+	if (DistanceAlongPath >= PathToFollow->GetSplineLength())
 	{
 		bReachedEnd = true;
 		DealDamageAndDestroy();
@@ -79,6 +86,16 @@ void ATDMonster::SetSplinePath(USplineComponent* NewSpline)
 			ESplineCoordinateSpace::World
 		));
 	}
+}
+
+USplineComponent* ATDMonster::GetPath() const
+{
+	return PathToFollow;
+}
+
+float ATDMonster::GetDistanceAlongPath() const
+{
+	return DistanceAlongPath;
 }
 
 void ATDMonster::DealDamageAndDestroy()

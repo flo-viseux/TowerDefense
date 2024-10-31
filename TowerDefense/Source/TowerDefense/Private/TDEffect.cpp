@@ -3,32 +3,20 @@
 
 #include "TDEffect.h"
 
-UTDEffect::UTDEffect()
-{
-	// Default
-	EffectType = ETDEffectType::Hit;
-	EffectValue = 0;
-}
-
-UTDEffect* UTDEffect::CreateEffect(ETDEffectType InEffectType, float InEffectValue)
-{
-	UTDEffect* NewEffect = NewObject<UTDEffect>();
-	NewEffect->Init(InEffectType, InEffectValue);
-	return NewEffect;
-}
-
-void UTDEffect::Init(ETDEffectType InEffectType, float InEffectValue)
+FTDEffect::FTDEffect(ETDEffectType InEffectType, float InEffectValue)
 {
 	EffectType = InEffectType;
 	EffectValue = InEffectValue;
 }
 
-ETDEffectType UTDEffect::GetType()
+ETDEffectType FTDEffect::GetType() const
 {
 	return EffectType;
 }
 
-float UTDEffect::GetValue()
+float FTDEffect::GetValue() const
 {
 	return EffectValue;
 }
+
+

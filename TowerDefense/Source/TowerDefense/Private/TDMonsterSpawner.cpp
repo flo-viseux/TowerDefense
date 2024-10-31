@@ -18,8 +18,6 @@ ATDMonsterSpawner::ATDMonsterSpawner()
 
 void ATDMonsterSpawner::BeginPlay()
 {
-    Super::BeginPlay();
-
     StartSpawning();
 }
 

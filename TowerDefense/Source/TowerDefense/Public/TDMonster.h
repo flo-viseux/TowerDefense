@@ -26,14 +26,23 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Path")
 	void SetSplinePath(USplineComponent* NewSpline);
+	
+	UFUNCTION(BlueprintCallable, Category="Path")
+	USplineComponent* GetPath() const;
+	
+	UFUNCTION(BlueprintCallable, Category="Path")
+	float GetDistanceAlongPath() const;
 
 	UFUNCTION(BlueprintCallable, Category="Path")
 	void DealDamageAndDestroy();
 
+	UFUNCTION(BlueprintCallable, Category = "Effect")
+	void ApplyEffect(FTDEffect Effect);
+
 private:
-	UTDAbility* HealthAbility;
+	FTDAbility HealthAbility;
 	
-	UTDAbility* SpeedAbility;
+	FTDAbility SpeedAbility;
 
 protected:
 	// Called when the game starts or when spawned
@@ -48,13 +57,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Gold")
 	int Gold;
 
-	UFUNCTION(BlueprintCallable, Category = "Effect")
-	void ApplyEffect(UTDEffect* Effect);
-
 	UPROPERTY()
 	USplineComponent* PathToFollow;
 
-	float DistanceAlongSpline;
+	float DistanceAlongPath;
 	
 	bool bReachedEnd;
 };

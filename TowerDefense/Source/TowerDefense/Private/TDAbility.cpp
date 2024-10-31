@@ -3,34 +3,21 @@
 
 #include "TDAbility.h"
 
-UTDAbility::UTDAbility()
+FTDAbility::FTDAbility(ETDAbilityType InAbilityType, float InAbilityInitialValue)
 {
-	// Default
-	AbilityType = ETDAbilityType::Health;
-	AbilityInitialValue = 0;
+	AbilityType = InAbilityType;
+	AbilityInitialValue = InAbilityInitialValue;
 	AbilityCurrentValue = AbilityInitialValue;
 }
 
-UTDAbility* UTDAbility::CreateAbility(ETDAbilityType InType, float InInitialValue)
-{
-	UTDAbility* NewAbility = NewObject<UTDAbility>();
-	NewAbility->Init(InType, InInitialValue);
-	return NewAbility;
-}
-
-void UTDAbility::Init(ETDAbilityType InType, float InInitialValue)
-{
-	AbilityType = InType;
-	AbilityInitialValue = InInitialValue;
-	AbilityCurrentValue = AbilityInitialValue;
-}
-
-void UTDAbility::ApplyEffect(float InEffectValue)
+void FTDAbility::ApplyEffect(float InEffectValue)
 {
 	AbilityCurrentValue += InEffectValue;
 }
 
-int UTDAbility::GetCurrentValue()
+float FTDAbility::GetCurrentValue() const
 {
 	return AbilityCurrentValue;
 }
+
+
