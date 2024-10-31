@@ -24,9 +24,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	bool IsValidGridPosition(int32 X, int32 Y) const;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	TArray<ATDCell*> GridCells;
+
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	TArray<ATDCell*> GetGridCells();
 	
 protected:
 	UFUNCTION(CallInEditor, Category = "Grid")
@@ -43,4 +43,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Grid")
 	UBlueprint* CellBP;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+	TArray<ATDCell*> GridCells;
 };

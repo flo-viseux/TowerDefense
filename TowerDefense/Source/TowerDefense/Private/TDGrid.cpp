@@ -66,3 +66,8 @@ bool ATDGrid::IsValidGridPosition(int32 X, int32 Y) const
     return X >= 0 && X < Width && Y >= 0 && Y < Height;
 }
 
+TArray<ATDCell*> ATDGrid::GetGridCells()
+{
+    return GridCells;
+}
+
