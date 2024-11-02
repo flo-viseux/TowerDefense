@@ -20,22 +20,6 @@ void ATDTower::BeginPlay()
 
 void ATDTower::UseEffect()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UseEffect"));
-
-	/*for (int32 i = MonstersInRange.Num() - 1; i >= 0; --i)
-	{
-		ATDMonster* Monster = MonstersInRange[i];
-        
-		if (!IsValid(Monster))
-		{
-			MonstersInRange.RemoveAt(i);
-			continue;
-		}
-        
-		Monster->ApplyEffect(Effect);
-	}
-	*/
-
 	// Default : Apply Effect on Monster in range closest to the core
 	if (IsValid(GetClosestToTheCoreMonster()))
 		GetClosestToTheCoreMonster()->ApplyEffect(Effect);
