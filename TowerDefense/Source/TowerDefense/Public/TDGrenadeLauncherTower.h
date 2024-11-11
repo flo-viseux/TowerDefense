@@ -18,5 +18,8 @@ public:
 	ATDGrenadeLauncherTower();
 	
 protected:
-	virtual void UseEffect() override;	
+	virtual void UseEffect() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	float GrenadeExplosionRadius = 50;
 };

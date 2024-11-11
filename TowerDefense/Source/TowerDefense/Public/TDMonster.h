@@ -38,6 +38,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Effect")
 	void ApplyEffect(FTDEffect Effect);
+	
+	UFUNCTION(BlueprintCallable, Category = "Effect")
+	void RemoveEffect(FTDEffect Effect);
 
 private:
 	FTDAbility HealthAbility;

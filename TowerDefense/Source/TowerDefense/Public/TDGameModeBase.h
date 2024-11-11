@@ -17,13 +17,9 @@ class TOWERDEFENSE_API ATDGameModeBase : public AGameModeBase
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "GameMode")
-	void InstantiateTower(FVector Location);
+	void InstantiateTower(TSubclassOf<ATDTower> TowerClass, FVector SpawnLocation);
 
 protected:
 	virtual void BeginPlay() override;
-
-private:
-	UPROPERTY(EditAnywhere, Category = "GameMode")
-	TSubclassOf<ATDTower> TowerClass;
 	
 };

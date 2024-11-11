@@ -13,6 +13,11 @@ ATDCell::ATDCell()
 	UBoxComponent* BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	BoxComp->SetBoxExtent(FVector(50.0f, 50.0f, 5.0f));
 	RootComponent = BoxComp;
+    
+	// Collision
+	BoxComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	BoxComp->SetCollisionResponseToAllChannels(ECR_Block);
+	BoxComp->SetGenerateOverlapEvents(false);
 
 }
 
@@ -25,11 +30,3 @@ void ATDCell::BeginPlay()
 	else
 		this->SetActorHiddenInGame(false);
 }
-
-void ATDCell::OnCellClicked()
-{
-    UE_LOG(LogTemp, Warning, TEXT("OnCellClicked"));
-
-	OnClickedEvent.Broadcast(this->GetActorLocation());
-}
-

@@ -44,6 +44,20 @@ void ATDMonster::ApplyEffect(FTDEffect Effect)
 	}
 }
 
+void ATDMonster::RemoveEffect(FTDEffect Effect)
+{
+	// Proto
+	switch (Effect.GetType())
+	{
+		case ETDEffectType::Hit:
+			HealthAbility.ApplyEffect(-Effect.GetValue());
+			break;
+		case ETDEffectType::Slow:
+			SpeedAbility.ApplyEffect(-Effect.GetValue());
+			break;
+	}
+}
+
 void ATDMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

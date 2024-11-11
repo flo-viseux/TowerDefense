@@ -13,24 +13,19 @@ class TOWERDEFENSE_API ATDCell : public AActor
 	
 public:	
 	ATDCell();
-	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCellClickedSignature, FVector, Location);
-    
-	UPROPERTY(BlueprintAssignable, Category = "Cell")
-	FOnCellClickedSignature OnClickedEvent;
 
 	UPROPERTY(EditAnywhere, Category = "Cell")
 	int32 X;
 	
 	UPROPERTY(EditAnywhere, Category = "Cell")
 	int32 Y;
+
+	UPROPERTY(EditAnywhere, Category = "Cell")
+	bool bIsOccuped;
+    
+	UPROPERTY(EditAnywhere, Category = "Cell")
+	bool bIsActive;
 	
 protected:
 	virtual void BeginPlay() override;
-	
-	UFUNCTION(BlueprintCallable, Category = "Cell")
-    void OnCellClicked();
-    
-    UPROPERTY(EditAnywhere, Category = "Cell")
-    bool bIsActive;
 };

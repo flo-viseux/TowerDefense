@@ -18,5 +18,18 @@ public:
 	ATDTeslaTower();
 	
 protected:
-	virtual void UseEffect() override;	
+	virtual void UseEffect() override;
+
+	virtual void OnMonsterEnterRange(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, 
+						   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, 
+						   bool bFromSweep, const FHitResult& SweepResult) override;
+
+	virtual void OnMonsterExitRange(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, 
+						  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	int ReboundCount = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	float ReboundDetectionRange = 100.0f;
 };

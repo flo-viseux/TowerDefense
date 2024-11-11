@@ -18,5 +18,14 @@ public:
 	ATDFrostTotemTower();
 	
 protected:
-	virtual void UseEffect() override;	
+	bool bEffectIsActive = false;
+	
+	virtual void UseEffect() override;
+
+	virtual void OnMonsterEnterRange(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, 
+						   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, 
+						   bool bFromSweep, const FHitResult& SweepResult) override;
+
+	virtual void OnMonsterExitRange(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, 
+						  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 };
