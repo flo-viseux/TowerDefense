@@ -23,11 +23,11 @@ public:
 	void GetGridPositionFromWorldPosition(const FVector& WorldPosition, int32& OutX, int32& OutY) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
-	bool IsValidGridPosition(int32 X, int32 Y) const;
+	TArray<ATDCell*> GetGridCells();
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
-	TArray<ATDCell*> GetGridCells();
-	
+	ATDCell* GetGridCell(int32 X, int32 Y) const;
+
 protected:
 	UFUNCTION(CallInEditor, Category = "Grid")
 	void GenerateGrid();

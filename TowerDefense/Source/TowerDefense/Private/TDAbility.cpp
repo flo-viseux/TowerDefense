@@ -13,6 +13,7 @@ FTDAbility::FTDAbility(ETDAbilityType InAbilityType, float InAbilityInitialValue
 void FTDAbility::ApplyEffect(float InEffectValue)
 {
 	AbilityCurrentValue += InEffectValue;
+	AbilityCurrentValue = FMath::Max(0, AbilityCurrentValue);
 }
 
 float FTDAbility::GetCurrentValue() const

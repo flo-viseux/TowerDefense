@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,6 +6,8 @@
 #include "GameFramework/Pawn.h"
 #include "Components/SplineComponent.h"
 #include "TDMonster.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateHealth, float, PercentHealth, int, CurrentHealth);
 
 UCLASS()
 class TOWERDEFENSE_API ATDMonster : public APawn
@@ -42,28 +42,38 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Effect")
 	void RemoveEffect(FTDEffect Effect);
 
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnUpdateHealth OnUpdateHealth;
+
 private:
 	FTDAbility HealthAbility;
 	
 	FTDAbility SpeedAbility;
+
+	FTDEffect DamageEffect;
+
+	TArray<FTDEffect> CurrentTemporaryEffects;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, Category = "Abilities")
-	float InitialHealth;
+	float InitialHealth = 100;
 
 	UPROPERTY(EditAnywhere, Category = "Abilities")
-	float InitialSpeed;
+	float InitialSpeed = 10;
+
+	UPROPERTY(EditAnywhere, Category = "Effect")
+	float InitialDamage = -10;
 
 	UPROPERTY(EditAnywhere, Category = "Gold")
-	int Gold;
+	int Gold = 25;
 
 	UPROPERTY()
 	USplineComponent* PathToFollow;
 
 	float DistanceAlongPath;
 	
-	bool bReachedEnd;
+	bool bReachedEnd = false;
 };

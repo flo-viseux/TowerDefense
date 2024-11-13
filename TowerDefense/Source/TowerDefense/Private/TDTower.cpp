@@ -4,7 +4,6 @@
 #include "TDTower.h"
 
 #include "Components/SphereComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 ATDTower::ATDTower()
@@ -20,24 +19,20 @@ ATDTower::ATDTower()
 	
 	Renderer = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
 	Renderer->SetupAttachment(DetectionSphere);
+	EffectAreaRenderer = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EffectArea"));
+	EffectAreaRenderer->SetupAttachment(DetectionSphere);
+	
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> CylinderAsset(TEXT("/Game/StarterContent/Shapes/Shape_Cylinder.Shape_Cylinder"));
 	if (CylinderAsset.Succeeded())
 	{
 		Renderer->SetStaticMesh(CylinderAsset.Object);
 		Renderer->SetWorldLocation(FVector(0.0f, 0.0f, 0.0f));
 		Renderer->SetWorldScale3D(FVector(1.0f));
+		
+		EffectAreaRenderer->SetStaticMesh(CylinderAsset.Object);
+		EffectAreaRenderer->SetWorldLocation(FVector(0.0f, 0.0f, 0.0f));
+		EffectAreaRenderer->SetWorldScale3D(FVector(2.0f, 2.0f, 0.01f));
 	}
-
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MaterialAsset(TEXT("/Game/TowerDefense/Materials/TowerMaterial"));
-	if (MaterialAsset.Succeeded())
-	{
-		BaseMaterial = MaterialAsset.Object;
-	}
-}
-
-ETowerType ATDTower::GetTowerType()
-{
-	return TowerType;
 }
 
 void ATDTower::BeginPlay()
@@ -46,17 +41,41 @@ void ATDTower::BeginPlay()
 
 	if (BaseMaterial && Renderer)
 	{
-		DynamicMaterial = UMaterialInstanceDynamic::Create(BaseMaterial, this);
-		Renderer->SetMaterial(0, DynamicMaterial);
-		DynamicMaterial->SetVectorParameterValue(TEXT("Color"), TowerColor);
-		DynamicMaterial->SetScalarParameterValue(TEXT("TowerLevel"), TowerLevel);
+		DynamicBaseMaterial = UMaterialInstanceDynamic::Create(BaseMaterial, this);
+		Renderer->SetMaterial(0, DynamicBaseMaterial);
+		DynamicBaseMaterial->SetVectorParameterValue(TEXT("Color"), TowerColor);
+		DynamicBaseMaterial->SetScalarParameterValue(TEXT("TowerLevel"), TowerLevel);
+	}
+
+	if (EffectAreaMaterial && EffectAreaRenderer)
+	{
+		DynamicEffectAreaMaterial = UMaterialInstanceDynamic::Create(EffectAreaMaterial, this);
+		EffectAreaRenderer->SetMaterial(0, DynamicEffectAreaMaterial);
+		DynamicEffectAreaMaterial->SetVectorParameterValue(TEXT("Color"), TowerColor);
 	}
 
 	MonstersInRange.Reserve(50);
-	Effect = FTDEffect(EffectType, EffectInitialValue);
+	Effect = FTDEffect(EffectType, EffectInitialValue, bIsTemporaryEffect);
 	StartUseEffect();
 
+	float EffectAreaScale = (DetectionSphere->GetScaledSphereRadius() * 2) / 100;
 	
+	EffectAreaRenderer->SetWorldScale3D(FVector(EffectAreaScale, EffectAreaScale, 0.01f));
+}
+
+ETowerType ATDTower::GetTowerType() const
+{
+	return TowerType;
+}
+
+int ATDTower::GetBuyPrice() const
+{
+	return BuyPrice;
+}
+
+int ATDTower::GetUpgradePrice() const
+{
+	return UpgradePrice;
 }
 
 void ATDTower::OnMonsterEnterRange(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -108,30 +127,13 @@ void ATDTower::StopUseEffect()
     GetWorldTimerManager().ClearTimer(UseEffectTimerHandle);
 }
 
-const FName ATDTower::BeamStartParam = FName("BeamStart");
-const FName ATDTower::BeamEndParam = FName("BeamEnd");
-const FName ATDTower::BeamLengthParam = FName("BeamLength");
-
-void ATDTower::SpawnVFX(const FVector& StartLocation, const FVector& TargetLocation)
+void ATDTower::Upgrade()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Spawning VFX"));
+	++TowerLevel;
+	Effect.Upgrade(UpgradeCoeff);
+	//UseEffectInterval /= UpgradeCoeff;
 	
-	if (!NiagaraSystem)
-		return;
-
-	// Calculer la direction et la distance du ricochet
-	FVector Direction = (TargetLocation - StartLocation).GetSafeNormal();
-	float Distance = FVector::Distance(StartLocation, TargetLocation);
-
-	// Spawn le système Niagara
-	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-		GetWorld(),
-		NiagaraSystem,
-		StartLocation,
-		Direction.Rotation()
-	);
-	
-	UE_LOG(LogTemp, Warning, TEXT("ParticleSystem has spawned"));
+	DynamicBaseMaterial->SetScalarParameterValue(TEXT("TowerLevel"), TowerLevel);
 }
 
 ATDMonster* ATDTower::GetClosestToTheCoreMonsterInRange()

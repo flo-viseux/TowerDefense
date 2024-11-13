@@ -29,8 +29,6 @@ void ATDTeslaTower::UseEffect()
 		{
 			NextTarget->ApplyEffect(Effect);
             
-			SpawnVFX(CurrentPosition, NextTarget->GetActorLocation());
-            
 			CurrentPosition = NextTarget->GetActorLocation();
             
 			HitMonsters.Add(NextTarget);

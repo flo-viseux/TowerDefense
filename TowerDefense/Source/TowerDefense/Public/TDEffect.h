@@ -22,16 +22,22 @@ struct TOWERDEFENSE_API FTDEffect
 	GENERATED_BODY()
 	
 public:
-	FTDEffect(): EffectType(ETDEffectType::Hit), EffectValue(0) {}
+	FTDEffect(): EffectType(ETDEffectType::Hit), EffectValue(0), bIsTemporary(false) {}
 	
-	FTDEffect(ETDEffectType InEffectType, float InEffectValue);
+	FTDEffect(ETDEffectType InEffectType, float InEffectValue, bool InIsTemporary);
 
 	ETDEffectType GetType() const;
+	
+	bool GetIsTemporary() const;
 
 	float GetValue() const;
+	
+	void Upgrade(float Coeff);
 
 private:
 	ETDEffectType EffectType;
 
 	float EffectValue;
+	
+	bool bIsTemporary;
 };

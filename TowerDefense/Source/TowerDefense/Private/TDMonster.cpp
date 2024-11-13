@@ -3,7 +3,9 @@
 
 #include "TDMonster.h"
 
+#include "TDPlayerController.h"
 #include "Components/TimelineComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ATDMonster::ATDMonster()
@@ -23,11 +25,21 @@ void ATDMonster::BeginPlay()
 
 	HealthAbility = FTDAbility(ETDAbilityType::Health, InitialHealth);
 	SpeedAbility = FTDAbility(ETDAbilityType::Speed, InitialSpeed);
+	DamageEffect = FTDEffect(ETDEffectType::Hit, InitialDamage, false);
+
+	OnUpdateHealth.Broadcast(HealthAbility.GetCurrentValue() / InitialHealth, HealthAbility.GetCurrentValue());
+
+	CurrentTemporaryEffects.Empty();
 }
 
 void ATDMonster::ApplyEffect(FTDEffect Effect)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Effect Value : %f"), Effect.GetValue());
+
+	if (Effect.GetIsTemporary())
+	{
+		CurrentTemporaryEffects.Add(Effect);
+	}
 	
 	switch (Effect.GetType())
 	{
@@ -35,7 +47,16 @@ void ATDMonster::ApplyEffect(FTDEffect Effect)
 			HealthAbility.ApplyEffect(Effect.GetValue());
 		
 			if (HealthAbility.GetCurrentValue() <= 0)
+			{	
+				ATDPlayerController* PlayerController = Cast<ATDPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+				
+				if (PlayerController)
+					PlayerController->AddGold(Gold);
+				
 				this->Destroy();
+			}
+
+			OnUpdateHealth.Broadcast(HealthAbility.GetCurrentValue() / InitialHealth, HealthAbility.GetCurrentValue());
 				
 			break;
 		case ETDEffectType::Slow:
@@ -46,15 +67,38 @@ void ATDMonster::ApplyEffect(FTDEffect Effect)
 
 void ATDMonster::RemoveEffect(FTDEffect Effect)
 {
-	// Proto
-	switch (Effect.GetType())
+	if (Effect.GetIsTemporary())
 	{
-		case ETDEffectType::Hit:
-			HealthAbility.ApplyEffect(-Effect.GetValue());
-			break;
-		case ETDEffectType::Slow:
-			SpeedAbility.ApplyEffect(-Effect.GetValue());
-			break;
+		for (int i = CurrentTemporaryEffects.Num() - 1; i >= 0; i--)
+		{
+			if (CurrentTemporaryEffects[i].GetType() == Effect.GetType() && CurrentTemporaryEffects[i].GetValue() == Effect.GetValue())
+			{
+				switch (Effect.GetType())
+				{
+					case ETDEffectType::Hit:
+						HealthAbility.ApplyEffect(FMath::Min(-Effect.GetValue(), InitialHealth));
+						break;
+					case ETDEffectType::Slow:
+						SpeedAbility.ApplyEffect(FMath::Min(-Effect.GetValue(), InitialSpeed));
+						break;
+				}
+				
+				CurrentTemporaryEffects.RemoveAt(i);
+				break;
+			}
+		}
+	}
+	else
+	{
+		switch (Effect.GetType())
+			{
+				case ETDEffectType::Hit:
+					HealthAbility.ApplyEffect(-Effect.GetValue());
+					break;
+				case ETDEffectType::Slow:
+					SpeedAbility.ApplyEffect(-Effect.GetValue());
+					break;
+			}
 	}
 }
 
@@ -115,7 +159,11 @@ float ATDMonster::GetDistanceAlongPath() const
 void ATDMonster::DealDamageAndDestroy()
 {
 	// TODO : apply damage to player core
-    
+	ATDPlayerController* PlayerController = Cast<ATDPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+	if (PlayerController)
+		PlayerController->RemoveHealth(DamageEffect.GetValue());
+	
 	Destroy();
 }
 

@@ -27,16 +27,28 @@ class TOWERDEFENSE_API ATDTower : public AActor
 public:	
 	ATDTower();
 
-	ETowerType GetTowerType();
+	ETowerType GetTowerType() const;
+	int GetBuyPrice() const;
+	int GetUpgradePrice() const;
+
+	int32 X;
+
+	int32 Y;
+
+	UFUNCTION(BlueprintCallable, Category = "Upgrade")
+	void Upgrade();
 
 protected:
 	virtual void BeginPlay() override;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Tower|Type")
-	ETowerType TowerType;
+	UPROPERTY(EditDefaultsOnly, Category = "Tower|DefaultValue")
+	ETowerType TowerType = ETowerType::MachineGun;
 
-	UPROPERTY()
-	UMaterialInstanceDynamic* DynamicMaterial;
+	UPROPERTY(EditDefaultsOnly, Category = "Tower|DefaultValue")
+	int BuyPrice = 20;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Tower|DefaultValue")
+	int UpgradePrice = 40;
     
 	UPROPERTY(EditDefaultsOnly, Category = "Tower|Appearance")
 	FLinearColor TowerColor = FLinearColor::White;
@@ -46,6 +58,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tower|Appearance")
 	UMaterialInterface* BaseMaterial;
+
+	UPROPERTY(VisibleAnywhere, Category = "Tower|Appearance")
+	UStaticMeshComponent* Renderer;
+	
+	UMaterialInstanceDynamic* DynamicBaseMaterial;
 	
 	FTDEffect Effect;
 
@@ -58,10 +75,19 @@ protected:
     float EffectInitialValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	bool bIsTemporaryEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
 	float UseEffectInterval = 2.0f;
 
-	UPROPERTY(VisibleAnywhere, Category = "Renderer")
-	UStaticMeshComponent* Renderer;
+	UPROPERTY(EditDefaultsOnly, Category = "Tower|Appearance")
+	UMaterialInterface* EffectAreaMaterial;
+	
+	UPROPERTY(VisibleAnywhere, Category = "EffectArea|Appearance")
+	UStaticMeshComponent* EffectAreaRenderer;
+	
+	UMaterialInstanceDynamic* DynamicEffectAreaMaterial;
+	
 	
 	UPROPERTY(VisibleAnywhere, Category = "Detection")
 	USphereComponent* DetectionSphere;
@@ -91,15 +117,8 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Effect")
 	void StopUseEffect();
 
-	static const FName BeamStartParam;
-	static const FName BeamEndParam;
-	static const FName BeamLengthParam;
-
-	UPROPERTY(EditAnywhere, Category = "Effect|VFX")
-	UNiagaraSystem* NiagaraSystem;
-	
-	UFUNCTION(BlueprintCallable, Category = "Effect")
-	virtual void SpawnVFX(const FVector& StartLocation, const FVector& TargetLocation);
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	float UpgradeCoeff = 1.1f;
 
 	UFUNCTION(BlueprintCallable, Category = "Monster")
 	ATDMonster* GetClosestToTheCoreMonsterInRange();

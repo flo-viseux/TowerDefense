@@ -61,13 +61,19 @@ void ATDGrid::GetGridPositionFromWorldPosition(const FVector& WorldPosition, int
     OutY = FMath::FloorToInt(LocalPosition.Y / CellSize);
 }
 
-bool ATDGrid::IsValidGridPosition(int32 X, int32 Y) const
-{
-    return X >= 0 && X < Width && Y >= 0 && Y < Height;
-}
-
 TArray<ATDCell*> ATDGrid::GetGridCells()
 {
     return GridCells;
+}
+
+ATDCell* ATDGrid::GetGridCell(int32 X, int32 Y) const
+{
+    for (ATDCell* Cell : GridCells)
+    {
+        if (Cell->X == X && Cell->Y == Y)
+            return Cell;
+    }
+    
+    return nullptr;
 }
 
