@@ -76,10 +76,10 @@ void ATDMonster::RemoveEffect(FTDEffect Effect)
 				switch (Effect.GetType())
 				{
 					case ETDEffectType::Hit:
-						HealthAbility.ApplyEffect(FMath::Min(-Effect.GetValue(), InitialHealth));
+						HealthAbility.RemoveEffect(Effect.GetValue());
 						break;
 					case ETDEffectType::Slow:
-						SpeedAbility.ApplyEffect(FMath::Min(-Effect.GetValue(), InitialSpeed));
+						SpeedAbility.RemoveEffect(Effect.GetValue());
 						break;
 				}
 				

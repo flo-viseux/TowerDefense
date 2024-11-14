@@ -16,6 +16,12 @@ void FTDAbility::ApplyEffect(float InEffectValue)
 	AbilityCurrentValue = FMath::Max(0, AbilityCurrentValue);
 }
 
+void FTDAbility::RemoveEffect(float InEffectValue)
+{
+	AbilityCurrentValue -= InEffectValue;
+	AbilityCurrentValue = FMath::Min(AbilityInitialValue, AbilityCurrentValue);
+}
+
 float FTDAbility::GetCurrentValue() const
 {
 	return AbilityCurrentValue;

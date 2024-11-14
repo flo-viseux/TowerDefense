@@ -26,6 +26,7 @@ public:
 	FTDAbility(ETDAbilityType InAbilityType, float InAbilityInitialValue);
 	
 	void ApplyEffect(float InEffectValue);
+	void RemoveEffect(float InEffectValue);
 
 	float GetCurrentValue() const;
 
